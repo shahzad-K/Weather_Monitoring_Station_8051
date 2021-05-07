@@ -12,11 +12,11 @@ void eeprom_byte_write(char_u8 SA, char_u8 dH, char_u8 dL, char_u8 * Data)
 	start();
 	write(SA);
 	ack();
-	write(dH);
+	write(dH);	//higher data word add.
 	ack();
-	write(dL);
+	write(dL);	//lower data word add.
 	ack();
-	for(i=0; ; ++i)
+	for(i=0; ; ++i)		//doing page write
 	{
 		write(Data[i]);
 		ack();
@@ -39,7 +39,7 @@ char_u8  eeprom_byte_read(char_u8 SA, char_u8 dH, char_u8 dL)
 	ack();
 	
 	start();
-	write(SA | 1);
+	write(SA | 1);		//sending slave add with read bit 
 	ack();
 	temp = read();
 	no_ack();
@@ -55,12 +55,13 @@ void mem_write()
 	static int_u16 dword=0;
 	++log_count;
 	
+	//creating array of weather log
 	log_arr[0]=log_count/10+48;
 	log_arr[1]=log_count%10+48;
 	log_arr[2]=' ';
 	
 	ptr=read_rtc();
-	for(i=3,j=0;	i<8; ++i,++j)
+	for(i=3,j=0; i<8; ++i,++j)
 		log_arr[i]=ptr[j];
 	log_arr[8]=' ';
 	log_arr[9]=ptr[9];
@@ -68,20 +69,21 @@ void mem_write()
 	log_arr[11]=' ';
 	
 	ptr=read_temperature();
-	for(i=12,j=0;	i<18; ++i,++j)
+	for(i=12,j=0; i<18; ++i,++j)
 		log_arr[i]=ptr[j];
 	log_arr[18]=' ';
 	
 	ptr=read_ldr();
-	for(i=19,j=0;	i<22; ++i,++j)
+	for(i=19,j=0; i<22; ++i,++j)
 		log_arr[i]=ptr[j];
 	log_arr[22]=' ';
 	
 	ptr=read_pot();
-	for(i=23,j=0;	i<28; ++i,++j)
+	for(i=23,j=0; i<28; ++i,++j)
 		log_arr[i]=ptr[j];
 	log_arr[28]='\0';
 	
+	//writing log to EEPROM page by page
 	eeprom_byte_write(0xA0, ((dword << 7) >> 8), ((dword << 7) & 0x80), log_arr);
 	++dword;
 }
@@ -95,7 +97,7 @@ void mem_read()
 	{
 		dH = (dword<<7) >> 8;
 		dL = (dword<<7) & 0x80;
-		for( ; ; ++dL)
+		for( ; ; ++dL)		//doing byte read
 		{
 			temp = eeprom_byte_read(0xA0, dH, dL);
 			if(temp == '\0')
