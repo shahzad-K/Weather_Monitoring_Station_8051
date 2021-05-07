@@ -12,10 +12,9 @@ main()
 	
 	while(1)
 	{
-		//mem_write();		
 		lcd_cmd(0x80);
 		ptr=read_rtc();
-	  print_str("Time: ");
+	  	print_str("Time: ");
 		print_str(ptr);
 		
 		minute_ctr =(ptr[3]-48)*10 + (ptr[4]-48);
@@ -36,7 +35,5 @@ main()
 		lcd_cmd(0xD4);
 		print_str("Pot: ");
 		print_str(read_pot());
-		
 	}	
-		
 }
