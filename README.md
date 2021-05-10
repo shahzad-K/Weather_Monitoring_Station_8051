@@ -1,4 +1,4 @@
-# Weather_Monitoring_8051
+# Weather_Monitoring_Station_8051
 
 This project is developed for collecting and monitoring weather/climatic conditions. Here atmospheric temperature, light intensity, potentiometer reading is monitored continuously and accordingly this data is logged into external memory with respect to RTC(Real-time clock).
 
